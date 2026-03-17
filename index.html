@@ -1,0 +1,1159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pulse &mdash; Predict What's Next</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #080810;
+    --bg2: #0e0e1c;
+    --card: #111122;
+    --card2: #181830;
+    --cyan: #00e5ff;
+    --pink: #ff3cac;
+    --green: #00ff88;
+    --amber: #ffb800;
+    --lilac: #c084fc;
+    --t: #f0f0ff;
+    --t2: #7070a0;
+    --t3: #3a3a5c;
+    --border: rgba(255,255,255,0.07);
+    --border2: rgba(255,255,255,0.13);
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--t);
+    font-family: 'DM Sans', sans-serif;
+    overflow-x: hidden;
+    line-height: 1.6;
+  }
+
+  /* -- NOISE OVERLAY -- */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 1000;
+    opacity: 0.4;
+  }
+
+  /* -- NAV -- */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    padding: 20px 48px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid transparent;
+    transition: all 0.3s;
+  }
+  nav.scrolled {
+    background: rgba(8,8,16,0.9);
+    border-color: var(--border);
+    backdrop-filter: blur(12px);
+    padding: 14px 48px;
+  }
+
+  .nav-logo {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 28px;
+    letter-spacing: 3px;
+    color: var(--cyan);
+  }
+  .nav-logo span { color: var(--t); }
+
+  .nav-links { display: flex; gap: 32px; align-items: center; }
+  .nav-links a {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--t2);
+    text-decoration: none;
+    transition: color 0.2s;
+    letter-spacing: 0.3px;
+  }
+  .nav-links a:hover { color: var(--t); }
+
+  .nav-cta {
+    padding: 9px 22px;
+    border-radius: 30px;
+    background: var(--cyan);
+    color: #08080f !important;
+    font-weight: 600 !important;
+    font-size: 13px !important;
+  }
+  .nav-cta:hover { opacity: 0.9; }
+
+  /* -- HERO -- */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 120px 24px 80px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero-glow {
+    position: absolute;
+    width: 600px; height: 600px;
+    border-radius: 50%;
+    background: rgba(0,229,255,0.04);
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+  }
+  .hero-glow2 {
+    position: absolute;
+    width: 400px; height: 400px;
+    border-radius: 50%;
+    background: rgba(255,60,172,0.04);
+    top: 30%; left: 60%;
+    pointer-events: none;
+  }
+
+  .hero-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 16px;
+    border: 1px solid rgba(0,229,255,0.3);
+    border-radius: 30px;
+    background: rgba(0,229,255,0.06);
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--cyan);
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    margin-bottom: 32px;
+    animation: fadeUp 0.8s ease both;
+  }
+  .eyebrow-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--cyan);
+    animation: pulse-dot 2s infinite;
+  }
+
+  @keyframes pulse-dot {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.4; transform: scale(0.7); }
+  }
+
+  .hero-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(72px, 14vw, 160px);
+    line-height: 0.9;
+    letter-spacing: 4px;
+    color: var(--t);
+    margin-bottom: 8px;
+    animation: fadeUp 0.8s 0.1s ease both;
+  }
+  .hero-title .accent { color: var(--cyan); }
+
+  .hero-sub-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(18px, 4vw, 40px);
+    letter-spacing: 6px;
+    color: var(--t2);
+    margin-bottom: 36px;
+    animation: fadeUp 0.8s 0.2s ease both;
+  }
+
+  .hero-desc {
+    max-width: 560px;
+    font-size: 18px;
+    line-height: 1.7;
+    color: var(--t2);
+    margin-bottom: 48px;
+    animation: fadeUp 0.8s 0.3s ease both;
+  }
+  .hero-desc strong { color: var(--t); font-weight: 500; }
+
+  .hero-ctas {
+    display: flex;
+    gap: 14px;
+    flex-wrap: wrap;
+    justify-content: center;
+    animation: fadeUp 0.8s 0.4s ease both;
+  }
+
+  .btn-primary {
+    padding: 14px 32px;
+    border-radius: 50px;
+    background: var(--cyan);
+    color: #08080f;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.2s;
+    letter-spacing: 0.3px;
+  }
+  .btn-primary:hover { opacity: 0.88; transform: translateY(-2px); }
+
+  .btn-ghost {
+    padding: 14px 32px;
+    border-radius: 50px;
+    border: 1px solid var(--border2);
+    color: var(--t);
+    font-size: 14px;
+    font-weight: 500;
+    text-decoration: none;
+    transition: all 0.2s;
+  }
+  .btn-ghost:hover { border-color: var(--cyan); color: var(--cyan); }
+
+  .hero-stats {
+    margin-top: 80px;
+    display: flex;
+    gap: 0;
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    overflow: hidden;
+    animation: fadeUp 0.8s 0.5s ease both;
+  }
+  .hstat {
+    padding: 24px 40px;
+    border-right: 1px solid var(--border);
+    text-align: center;
+  }
+  .hstat:last-child { border-right: none; }
+  .hstat-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 42px;
+    letter-spacing: 2px;
+    color: var(--cyan);
+    line-height: 1;
+  }
+  .hstat-lbl {
+    font-size: 11px;
+    color: var(--t2);
+    margin-top: 4px;
+    letter-spacing: 0.5px;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* -- TICKER -- */
+  .ticker-wrap {
+    overflow: hidden;
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    background: var(--bg2);
+    padding: 14px 0;
+  }
+  .ticker-track {
+    display: flex;
+    gap: 0;
+    animation: ticker 30s linear infinite;
+    white-space: nowrap;
+  }
+  .ticker-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 24px;
+    padding: 0 24px;
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    color: var(--t2);
+  }
+  .ticker-dot { width: 4px; height: 4px; border-radius: 50%; background: var(--cyan); flex-shrink: 0; }
+  .ticker-hot { color: var(--cyan); font-weight: 500; }
+  @keyframes ticker {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
+
+  /* -- SECTIONS -- */
+  section { padding: 100px 24px; max-width: 1200px; margin: 0 auto; }
+
+  .section-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--cyan);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+  }
+  .section-label::before {
+    content: '';
+    width: 24px; height: 1px;
+    background: var(--cyan);
+  }
+
+  .section-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(44px, 7vw, 80px);
+    line-height: 0.95;
+    letter-spacing: 2px;
+    color: var(--t);
+    margin-bottom: 24px;
+  }
+  .section-title .ac { color: var(--cyan); }
+  .section-title .ap { color: var(--pink); }
+
+  .section-body {
+    font-size: 17px;
+    line-height: 1.75;
+    color: var(--t2);
+    max-width: 680px;
+  }
+  .section-body strong { color: var(--t); font-weight: 500; }
+
+  /* -- HOW IT WORKS -- */
+  .steps-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    overflow: hidden;
+    margin-top: 60px;
+  }
+
+  .step {
+    background: var(--card);
+    padding: 36px 28px;
+    position: relative;
+    transition: background 0.2s;
+  }
+  .step:hover { background: var(--card2); }
+
+  .step-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 64px;
+    letter-spacing: 2px;
+    line-height: 1;
+    color: var(--t3);
+    margin-bottom: 16px;
+    transition: color 0.2s;
+  }
+  .step:hover .step-num { color: var(--cyan); }
+
+  .step-icon { font-size: 28px; margin-bottom: 12px; }
+  .step-title { font-size: 18px; font-weight: 600; color: var(--t); margin-bottom: 10px; }
+  .step-desc { font-size: 14px; color: var(--t2); line-height: 1.6; }
+
+  /* -- PREDICTIONS SHOWCASE -- */
+  .preds-section { background: var(--bg2); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+  .preds-section > div { max-width: 1200px; margin: 0 auto; padding: 100px 24px; }
+
+  .preds-header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    margin-bottom: 48px;
+    gap: 24px;
+    flex-wrap: wrap;
+  }
+
+  .pred-cards-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+  }
+
+  .pred-card-port {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    overflow: hidden;
+    transition: all 0.25s;
+    cursor: pointer;
+  }
+  .pred-card-port:hover { border-color: rgba(0,229,255,0.25); transform: translateY(-4px); }
+  .pred-card-port.featured { border-color: rgba(0,229,255,0.2); grid-row: span 2; }
+
+  .pcp-top {
+    padding: 18px 18px 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .pcp-av {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  .pcp-mboard {
+    width: 100%;
+    aspect-ratio: 16/9;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 2px;
+  }
+  .pcp-mboard.tall { aspect-ratio: 4/5; grid-template-rows: 1fr 1fr 1fr; }
+  .pcp-mi {
+    background: var(--card2);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px;
+  }
+  .pcp-mi.big { grid-row: span 2; font-size: 34px; }
+
+  .pcp-body { padding: 16px 18px 18px; }
+  .pcp-claim { font-size: 14px; line-height: 1.5; color: var(--t); margin-bottom: 12px; }
+  .pcp-claim strong { color: var(--cyan); font-weight: 500; }
+
+  .pcp-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+  }
+
+  .cpill {
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 10px;
+    font-weight: 600;
+    border: 1px solid;
+  }
+  .c-music { background: rgba(192,132,252,0.1); color: var(--lilac); border-color: rgba(192,132,252,0.3); }
+  .c-fashion { background: rgba(255,60,172,0.1); color: var(--pink); border-color: rgba(255,60,172,0.25); }
+  .c-beauty { background: rgba(255,184,0,0.1); color: var(--amber); border-color: rgba(255,184,0,0.25); }
+  .c-sports { background: rgba(255,107,53,0.1); color: #ff6b35; border-color: rgba(255,107,53,0.25); }
+  .c-gaming { background: rgba(0,255,136,0.1); color: var(--green); border-color: rgba(0,255,136,0.25); }
+  .c-film { background: rgba(255,107,53,0.1); color: #ff6b35; border-color: rgba(255,107,53,0.25); }
+  .c-food { background: rgba(255,184,0,0.1); color: var(--amber); border-color: rgba(255,184,0,0.25); }
+
+  .pcp-backers { font-size: 12px; color: var(--t2); }
+  .pcp-backers strong { color: var(--t); font-weight: 500; }
+
+  .pcp-hbar { height: 3px; background: var(--bg); border-radius: 2px; overflow: hidden; }
+  .pcp-hfill { height: 100%; border-radius: 2px; background: linear-gradient(90deg, var(--cyan), var(--pink)); }
+
+  .pcp-badge {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 2px 8px;
+    background: rgba(0,229,255,0.1);
+    border: 1px solid rgba(0,229,255,0.25);
+    border-radius: 20px;
+    font-size: 10px; font-weight: 700; color: var(--cyan);
+  }
+
+  /* -- INFLUENCER -- */
+  .inf-section { padding: 100px 24px; }
+  .inf-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 80px;
+    align-items: center;
+    margin-top: 60px;
+  }
+
+  .inf-roles { display: flex; flex-direction: column; gap: 20px; }
+
+  .inf-role {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 24px;
+    transition: all 0.2s;
+    border-left: 3px solid transparent;
+  }
+  .inf-role:hover { border-left-color: var(--cyan); background: var(--card2); }
+  .inf-role-title { font-size: 16px; font-weight: 600; color: var(--t); margin-bottom: 8px; display: flex; align-items: center; gap: 10px; }
+  .inf-role-icon { font-size: 20px; }
+  .inf-role-desc { font-size: 14px; color: var(--t2); line-height: 1.6; }
+
+  .inf-visual {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    overflow: hidden;
+  }
+
+  .inf-vis-top {
+    background: var(--card2);
+    padding: 20px;
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; gap: 12px;
+  }
+  .inf-big-av {
+    width: 52px; height: 52px; border-radius: 50%;
+    background: rgba(0,229,255,0.15);
+    border: 2px solid var(--cyan);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px; font-weight: 700; color: var(--cyan);
+  }
+
+  .inf-stats-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    border-bottom: 1px solid var(--border);
+  }
+  .inf-stat {
+    padding: 18px;
+    text-align: center;
+    border-right: 1px solid var(--border);
+  }
+  .inf-stat:last-child { border-right: none; }
+  .inf-stat-num { font-family: 'Bebas Neue', sans-serif; font-size: 30px; letter-spacing: 1px; color: var(--cyan); }
+  .inf-stat-lbl { font-size: 10px; color: var(--t2); text-transform: uppercase; letter-spacing: 0.5px; margin-top: 2px; }
+
+  .inf-preds { padding: 16px; display: flex; flex-direction: column; gap: 10px; }
+  .inf-pred-row {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 12px;
+    background: var(--bg2);
+    border-radius: 10px;
+    font-size: 13px;
+  }
+  .inf-pred-status { font-size: 14px; }
+  .inf-pred-text { flex: 1; color: var(--t); font-size: 12px; line-height: 1.3; }
+  .inf-pred-result { font-size: 11px; font-weight: 600; }
+  .hit { color: var(--green); }
+  .miss { color: var(--t2); }
+
+  /* -- BRAND DATA -- */
+  .data-section { background: var(--bg2); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+  .data-section > div { max-width: 1200px; margin: 0 auto; padding: 100px 24px; }
+  .data-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin-top: 60px; }
+
+  .data-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 32px 28px;
+    transition: all 0.2s;
+  }
+  .data-card:hover { border-color: var(--border2); transform: translateY(-3px); }
+  .data-card.ft { border-color: rgba(0,229,255,0.2); }
+
+  .dc-tier {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    margin-bottom: 20px;
+  }
+  .tier-signal { background: rgba(128,128,168,0.15); color: var(--t2); border: 1px solid var(--border2); }
+  .tier-spotlight { background: rgba(0,229,255,0.1); color: var(--cyan); border: 1px solid rgba(0,229,255,0.3); }
+  .tier-oracle { background: rgba(255,184,0,0.12); color: var(--amber); border: 1px solid rgba(255,184,0,0.3); }
+
+  .dc-price { font-family: 'Bebas Neue', sans-serif; font-size: 40px; letter-spacing: 1px; color: var(--t); margin-bottom: 6px; }
+  .dc-price span { font-size: 20px; color: var(--t2); font-family: 'DM Sans', sans-serif; font-weight: 400; }
+  .dc-desc { font-size: 14px; color: var(--t2); margin-bottom: 20px; line-height: 1.5; }
+
+  .dc-features { display: flex; flex-direction: column; gap: 8px; }
+  .dc-feat {
+    display: flex; align-items: center; gap: 10px;
+    font-size: 13px; color: var(--t2);
+  }
+  .feat-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--cyan); flex-shrink: 0; }
+
+  /* -- REWARDS SHOWCASE -- */
+  .rewards-grid-port {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 14px;
+    margin-top: 60px;
+  }
+  .rw-card-port {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+    transition: all 0.2s;
+  }
+  .rw-card-port:hover { border-color: var(--border2); transform: translateY(-3px); }
+  .rw-img-port {
+    aspect-ratio: 1;
+    background: var(--card2);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 32px;
+    position: relative;
+  }
+  .rw-brand-lbl {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    padding: 4px 8px;
+    background: rgba(8,8,16,0.8);
+    font-size: 8px; font-weight: 700; letter-spacing: 0.8px;
+    color: var(--t2); text-transform: uppercase;
+  }
+  .rw-info-port { padding: 10px 12px 12px; }
+  .rw-name-port { font-size: 12px; font-weight: 500; color: var(--t); line-height: 1.3; }
+  .rw-type-port { font-size: 10px; color: var(--t2); margin-top: 3px; }
+  .rw-pts-port { font-size: 12px; font-weight: 700; color: var(--cyan); margin-top: 8px; }
+
+  /* -- SUBCULTURES -- */
+  .subcultures-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+    margin-top: 60px;
+  }
+  .sc-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 24px 20px;
+    transition: all 0.2s;
+  }
+  .sc-card:hover { transform: translateY(-3px); border-color: var(--border2); }
+  .sc-icon { font-size: 28px; margin-bottom: 12px; }
+  .sc-name { font-size: 16px; font-weight: 600; color: var(--t); margin-bottom: 8px; }
+  .sc-examples { font-size: 12px; color: var(--t2); line-height: 1.6; }
+
+  /* -- FOOTER / CTA -- */
+  .final-cta {
+    text-align: center;
+    padding: 120px 24px;
+    position: relative;
+    overflow: hidden;
+  }
+  .final-cta-bg {
+    position: absolute;
+    width: 500px; height: 500px;
+    border-radius: 50%;
+    background: rgba(0,229,255,0.04);
+    top: 50%; left: 50%;
+    transform: translate(-50%,-50%);
+    pointer-events: none;
+  }
+
+  .final-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(52px, 10vw, 110px);
+    letter-spacing: 3px;
+    line-height: 0.95;
+    color: var(--t);
+    margin-bottom: 24px;
+    position: relative;
+  }
+  .final-title .ac { color: var(--cyan); }
+
+  .final-sub {
+    font-size: 18px;
+    color: var(--t2);
+    max-width: 480px;
+    margin: 0 auto 48px;
+    line-height: 1.7;
+    position: relative;
+  }
+
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 32px 48px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .footer-logo { font-family: 'Bebas Neue', sans-serif; font-size: 22px; letter-spacing: 3px; color: var(--t2); }
+  .footer-logo span { color: var(--t3); }
+  .footer-copy { font-size: 12px; color: var(--t3); font-family: 'DM Mono', monospace; }
+
+  /* -- SCROLL REVEAL -- */
+  .reveal {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+  .reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* -- RESPONSIVE -- */
+  @media (max-width: 900px) {
+    nav { padding: 16px 24px; }
+    nav.scrolled { padding: 12px 24px; }
+    .nav-links { display: none; }
+    .steps-grid { grid-template-columns: 1fr 1fr; }
+    .pred-cards-grid { grid-template-columns: 1fr 1fr; }
+    .pred-card-port.featured { grid-row: span 1; }
+    .inf-grid { grid-template-columns: 1fr; }
+    .data-grid { grid-template-columns: 1fr; }
+    .rewards-grid-port { grid-template-columns: repeat(3, 1fr); }
+    .subcultures-grid { grid-template-columns: 1fr 1fr; }
+    .hero-stats { flex-direction: column; border-radius: 16px; }
+    .hstat { border-right: none; border-bottom: 1px solid var(--border); }
+    .hstat:last-child { border-bottom: none; }
+    footer { flex-direction: column; gap: 12px; text-align: center; }
+  }
+
+  @media (max-width: 600px) {
+    .steps-grid { grid-template-columns: 1fr; }
+    .pred-cards-grid { grid-template-columns: 1fr; }
+    .rewards-grid-port { grid-template-columns: 1fr 1fr; }
+    .subcultures-grid { grid-template-columns: 1fr 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav id="nav">
+  <div class="nav-logo">pulse<span>.</span></div>
+  <div class="nav-links">
+    <a href="#how">How it works</a>
+    <a href="#predictions">Predictions</a>
+    <a href="#creators">Creators</a>
+    <a href="#brands">For Brands</a>
+    <a href="#rewards">Rewards</a>
+    <a href="#contact" class="nav-cta">Get in touch</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-glow"></div>
+  <div class="hero-glow2"></div>
+  <div class="hero-eyebrow"><div class="eyebrow-dot"></div>Concept &middot; 2026</div>
+  <h1 class="hero-title"><span class="accent">PREDICT</span><br>WHAT'S<br>NEXT.</h1>
+  <p class="hero-sub-title">Prove you called it. Get rewarded.</p>
+  <p class="hero-desc">
+    Pulse is a <strong>predictive trend platform</strong> where culture-obsessed people make visual moodboard predictions &mdash; and earn real brand rewards when they're right. Part prediction market, part social platform, part influencer economy &mdash; <strong>open to anyone with taste.</strong>
+  </p>
+  <div class="hero-ctas">
+    <a href="#how" class="btn-primary">See how it works</a>
+    <a href="#brands" class="btn-ghost">Brand & creator decks &rarr;</a>
+  </div>
+  <div class="hero-stats">
+    <div class="hstat">
+      <div class="hstat-num">7</div>
+      <div class="hstat-lbl">Culture categories</div>
+    </div>
+    <div class="hstat">
+      <div class="hstat-num">500</div>
+      <div class="hstat-lbl">Backers per prediction</div>
+    </div>
+    <div class="hstat">
+      <div class="hstat-num">4</div>
+      <div class="hstat-lbl">Steps to earn rewards</div>
+    </div>
+    <div class="hstat">
+      <div class="hstat-num">&#8734;</div>
+      <div class="hstat-lbl">Ways to be right</div>
+    </div>
+  </div>
+</section>
+
+<!-- TICKER -->
+<div class="ticker-wrap">
+  <div class="ticker-track" id="ticker"></div>
+</div>
+
+<!-- HOW IT WORKS -->
+<section id="how">
+  <div class="section-label">How it works</div>
+  <h2 class="section-title">FOUR STEPS.<br><span class="ac">ONE LOOP.</span></h2>
+  <p class="section-body">No followers required. No algorithm to game. Just your instincts, a moodboard, and a deadline. If you're right &mdash; you win things that used to be reserved for people with a PR list.</p>
+  <div class="steps-grid reveal">
+    <div class="step">
+      <div class="step-num">01</div>
+      <div class="step-icon">&#127912;</div>
+      <div class="step-title">The Call</div>
+      <div class="step-desc">Build a moodboard. Attach a specific, binary prediction &mdash; something that resolves YES or NO by a deadline. No vague takes.</div>
+    </div>
+    <div class="step">
+      <div class="step-num">02</div>
+      <div class="step-icon">&#9889;</div>
+      <div class="step-title">The Back</div>
+      <div class="step-desc">Other users back your call with Pulse Points. Fast backing = trending prediction. First 10% of backers earn a bonus if it hits.</div>
+    </div>
+    <div class="step">
+      <div class="step-num">03</div>
+      <div class="step-icon">&#10003;</div>
+      <div class="step-title">The Resolve</div>
+      <div class="step-desc">Deadline hits. The system checks the source &mdash; runway archive, retail listing, Google Trends, social count. YES or NO. Immutable.</div>
+    </div>
+    <div class="step">
+      <div class="step-num">04</div>
+      <div class="step-icon">&#127873;</div>
+      <div class="step-title">The Earn</div>
+      <div class="step-desc">Win and redeem real rewards &mdash; brand products, early access drops, event invites, gifting packages. The influencer economy, democratized.</div>
+    </div>
+  </div>
+</section>
+
+<!-- PREDICTIONS SHOWCASE -->
+<div class="preds-section" id="predictions">
+  <div>
+    <div class="section-label">Live Predictions</div>
+    <div class="preds-header">
+      <h2 class="section-title" style="margin-bottom:0">WHAT PEOPLE<br><span class="ac">ARE CALLING.</span></h2>
+      <p style="font-size:15px;color:var(--t2);max-width:340px;line-height:1.6">Music. Fashion. Sports. Gaming. Film. Beauty. Food. Every subculture, one feed.</p>
+    </div>
+    <div class="pred-cards-grid reveal">
+
+      <div class="pred-card-port featured">
+        <div class="pcp-top">
+          <div class="pcp-av" style="background:rgba(192,132,252,0.18);color:#c084fc">CC</div>
+          <div>
+            <div style="font-size:13px;font-weight:500;color:var(--t)">@chartsandcalls <span style="font-size:10px;color:var(--cyan)">&#10022;</span></div>
+            <div style="font-size:11px;color:var(--t2);margin-top:1px"><span class="cpill c-music">Music</span></div>
+          </div>
+          <div style="margin-left:auto"><div class="pcp-badge">&#128293; HOT</div></div>
+        </div>
+        <div class="pcp-mboard tall">
+          <div class="pcp-mi big">&#127914;</div>
+          <div class="pcp-mi">&#127752;</div>
+          <div class="pcp-mi">&#127908;</div>
+          <div class="pcp-mi">&#127769;</div>
+          <div class="pcp-mi">&#11088;</div>
+          <div class="pcp-mi">&#127926;</div>
+        </div>
+        <div class="pcp-body">
+          <div class="pcp-claim"><strong>Chappell Roan</strong> will headline a major festival (Coachella, Glastonbury, or Lollapalooza) before end of 2026</div>
+          <div class="pcp-meta">
+            <span class="pcp-backers"><strong>601</strong> backers &middot; 499 spots left</span>
+            <span style="font-size:11px;color:var(--t2)">Resolves Dec 31</span>
+          </div>
+          <div class="pcp-hbar"><div class="pcp-hfill" style="width:94%"></div></div>
+        </div>
+      </div>
+
+      <div class="pred-card-port">
+        <div class="pcp-top">
+          <div class="pcp-av" style="background:rgba(0,229,255,0.18);color:var(--cyan)">JS</div>
+          <div>
+            <div style="font-size:13px;font-weight:500;color:var(--t)">@jakeshane <span style="font-size:10px;color:var(--cyan)">&#10022;</span></div>
+            <div style="font-size:11px;color:var(--t2);margin-top:1px"><span class="cpill c-beauty">Beauty</span></div>
+          </div>
+        </div>
+        <div style="background:rgba(192,132,252,0.07);border-bottom:1px solid rgba(192,132,252,0.15);padding:5px 16px;font-size:11px;color:rgba(192,132,252,0.85)">&#11088; Sponsored by RHODE SKIN</div>
+        <div class="pcp-mboard">
+          <div class="pcp-mi big">&#127799;</div>
+          <div class="pcp-mi">&#128134;</div>
+          <div class="pcp-mi">&#10024;</div>
+          <div class="pcp-mi">&#129524;</div>
+        </div>
+        <div class="pcp-body">
+          <div class="pcp-claim"><strong>Rhode</strong> launches a full skincare line before end of Q2 2026</div>
+          <div class="pcp-meta">
+            <span class="pcp-backers"><strong>512</strong> backers</span>
+            <span style="font-size:11px;color:var(--t2)">Resolves Jun 30</span>
+          </div>
+          <div class="pcp-hbar"><div class="pcp-hfill" style="width:91%"></div></div>
+        </div>
+      </div>
+
+      <div class="pred-card-port">
+        <div style="background:rgba(255,184,0,0.07);border-bottom:1px solid rgba(255,184,0,0.15);padding:5px 16px;font-size:11px;color:rgba(255,184,0,0.85)">&#128065; Fan Prediction about @sabrinacarpenter</div>
+        <div class="pcp-top">
+          <div class="pcp-av" style="background:rgba(255,60,172,0.18);color:var(--pink)">PC</div>
+          <div>
+            <div style="font-size:13px;font-weight:500;color:var(--t)">@popculture.calls</div>
+            <div style="font-size:11px;color:var(--t2);margin-top:1px"><span class="cpill c-music">Music</span></div>
+          </div>
+          <div style="margin-left:auto"><div class="pcp-badge">&#128293; HOT</div></div>
+        </div>
+        <div class="pcp-mboard">
+          <div class="pcp-mi big">&#127908;</div>
+          <div class="pcp-mi">&#127800;</div>
+          <div class="pcp-mi">&#128087;</div>
+          <div class="pcp-mi">&#127926;</div>
+        </div>
+        <div class="pcp-body">
+          <div class="pcp-claim"><strong>Sabrina Carpenter</strong> drops a surprise streetwear collab before her next tour leg</div>
+          <div class="pcp-meta">
+            <span class="pcp-backers"><strong>489</strong> backers</span>
+            <span style="font-size:11px;color:var(--t2)">Resolves Aug 1</span>
+          </div>
+          <div class="pcp-hbar"><div class="pcp-hfill" style="width:87%"></div></div>
+        </div>
+      </div>
+
+      <div class="pred-card-port">
+        <div class="pcp-top">
+          <div class="pcp-av" style="background:rgba(255,107,53,0.18);color:#ff6b35">SW</div>
+          <div>
+            <div style="font-size:13px;font-weight:500;color:var(--t)">@streamwatch</div>
+            <div style="font-size:11px;color:var(--t2);margin-top:1px"><span class="cpill c-film">Film & TV</span></div>
+          </div>
+        </div>
+        <div style="background:rgba(255,184,0,0.07);border-bottom:1px solid rgba(255,184,0,0.15);padding:5px 16px;font-size:11px;color:rgba(255,184,0,0.85)">&#128065; Fan Prediction about @zendaya</div>
+        <div class="pcp-mboard">
+          <div class="pcp-mi big">&#127916;</div>
+          <div class="pcp-mi">&#11088;</div>
+          <div class="pcp-mi">&#127917;</div>
+          <div class="pcp-mi">&#10024;</div>
+        </div>
+        <div class="pcp-body">
+          <div class="pcp-claim"><strong>Zendaya</strong> announces a new film role (not a sequel) before mid-2026</div>
+          <div class="pcp-meta">
+            <span class="pcp-backers"><strong>433</strong> backers</span>
+            <span style="font-size:11px;color:var(--t2)">Resolves Jun 30</span>
+          </div>
+          <div class="pcp-hbar"><div class="pcp-hfill" style="width:79%"></div></div>
+        </div>
+      </div>
+
+      <div class="pred-card-port">
+        <div class="pcp-top">
+          <div class="pcp-av" style="background:rgba(0,255,136,0.18);color:var(--green)">AS</div>
+          <div>
+            <div style="font-size:13px;font-weight:500;color:var(--t)">@acquired.style <span style="font-size:10px;color:var(--cyan)">&#10022;</span></div>
+            <div style="font-size:11px;color:var(--t2);margin-top:1px"><span class="cpill c-fashion">Fashion</span></div>
+          </div>
+        </div>
+        <div class="pcp-mboard">
+          <div class="pcp-mi big">&#127918;</div>
+          <div class="pcp-mi">&#128293;</div>
+          <div class="pcp-mi">&#128085;</div>
+          <div class="pcp-mi">&#9889;</div>
+        </div>
+        <div class="pcp-body">
+          <div class="pcp-claim"><strong>Kai Cenat</strong> launches a standalone merch brand (not a collab) by Dec 2026</div>
+          <div class="pcp-meta">
+            <span class="pcp-backers"><strong>367</strong> backers</span>
+            <span style="font-size:11px;color:var(--t2)">Resolves Dec 31</span>
+          </div>
+          <div class="pcp-hbar"><div class="pcp-hfill" style="width:72%"></div></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- SUBCULTURES -->
+<section>
+  <div class="section-label">Categories</div>
+  <h2 class="section-title">EVERY<br><span class="ap">SUBCULTURE.</span></h2>
+  <p class="section-body">Pulse isn't one thing. It's wherever culture moves &mdash; from runway to rap beef to esports.</p>
+  <div class="subcultures-grid reveal">
+    <div class="sc-card"><div class="sc-icon">&#127925;</div><div class="sc-name">Music</div><div class="sc-examples">Album drops, festival lineups, collab announcements, chart predictions, era shifts</div></div>
+    <div class="sc-card"><div class="sc-icon">&#128087;</div><div class="sc-name">Fashion</div><div class="sc-examples">Runway trends, aesthetic cycles, brand collabs, drop predictions, streetwear moments</div></div>
+    <div class="sc-card"><div class="sc-icon">&#128132;</div><div class="sc-name">Beauty</div><div class="sc-examples">Product launches, ingredient trends, brand expansions, format cycles, viral formulas</div></div>
+    <div class="sc-card"><div class="sc-icon">&#127936;</div><div class="sc-name">Sports</div><div class="sc-examples">Athlete brand deals, league moves, crossover moments, sneaker drops, retirements</div></div>
+    <div class="sc-card"><div class="sc-icon">&#127918;</div><div class="sc-name">Gaming</div><div class="sc-examples">Streaming deals, game launches, esports moments, creator moves, console predictions</div></div>
+    <div class="sc-card"><div class="sc-icon">&#127916;</div><div class="sc-name">Film & TV</div><div class="sc-examples">Casting news, sequel announcements, award predictions, streaming platform shifts</div></div>
+    <div class="sc-card"><div class="sc-icon">&#9749;</div><div class="sc-name">Food & Drink</div><div class="sc-examples">Brand physical locations, ingredient trends, viral menu items, creator-brand collabs</div></div>
+    <div class="sc-card"><div class="sc-icon">&#127912;</div><div class="sc-name">Art & Design</div><div class="sc-examples">Aesthetic movements, gallery moments, designer collabs, visual culture cycles</div></div>
+  </div>
+</section>
+
+<!-- INFLUENCER / CREATOR -->
+<div style="background:var(--bg2);border-top:1px solid var(--border);border-bottom:1px solid var(--border)">
+  <section id="creators" class="inf-section" style="max-width:1200px;margin:0 auto">
+    <div class="section-label">For Creators</div>
+    <h2 class="section-title">THE INFLUENCER<br><span class="ac">ECONOMY,</span><br>UNLOCKED.</h2>
+    <p class="section-body" style="margin-bottom:0">Verified creators on Pulse don't just post &mdash; they predict, get backed, and build a track record. And their followers can make predictions <em>about</em> them.</p>
+    <div class="inf-grid reveal">
+      <div class="inf-roles">
+        <div class="inf-role">
+          <div class="inf-role-title"><span class="inf-role-icon">&#10022;</span> Verified Predictor</div>
+          <div class="inf-role-desc">Verified creators make public calls. Their accuracy score is prominent and public &mdash; a strong track record makes them a signal in itself. High accuracy unlocks brand gifting and collab opportunities without needing a PR list.</div>
+        </div>
+        <div class="inf-role">
+          <div class="inf-role-title"><span class="inf-role-icon">&#128065;</span> Prediction Subject</div>
+          <div class="inf-role-desc">Fans make binary predictions about creators &mdash; will they launch a brand, drop a collab, change their aesthetic? Creators get notified and can comment, boosting engagement and keeping their audience watching closely.</div>
+        </div>
+        <div class="inf-role">
+          <div class="inf-role-title"><span class="inf-role-icon">&#11088;</span> Brand Sponsored</div>
+          <div class="inf-role-desc">Brands pay creators to make predictions in their category. Clearly labeled. Creator earns a fee, their community engages through backing, and the brand gets cultural data + organic content &mdash; all in one placement.</div>
+        </div>
+      </div>
+      <div class="inf-visual">
+        <div class="inf-vis-top">
+          <div class="inf-big-av">AE</div>
+          <div>
+            <div style="font-size:16px;font-weight:600;color:var(--t)">Alix Earle</div>
+            <div style="font-size:12px;color:var(--t2);margin-top:2px">@alixearle &middot; <span style="color:var(--cyan);font-size:11px;font-weight:600">&#10022; Oracle Tier</span></div>
+          </div>
+          <div style="margin-left:auto;text-align:right">
+            <div style="font-size:10px;color:var(--t2)">Sponsored by</div>
+            <div style="font-size:12px;font-weight:700;color:var(--lilac)">RARE BEAUTY</div>
+          </div>
+        </div>
+        <div class="inf-stats-row">
+          <div class="inf-stat"><div class="inf-stat-num">47</div><div class="inf-stat-lbl">Calls Made</div></div>
+          <div class="inf-stat"><div class="inf-stat-num" style="color:var(--green)">84%</div><div class="inf-stat-lbl">Accuracy</div></div>
+          <div class="inf-stat"><div class="inf-stat-num" style="color:var(--amber)">2.1k</div><div class="inf-stat-lbl">Total Backers</div></div>
+        </div>
+        <div class="inf-preds">
+          <div style="font-size:10px;font-weight:700;color:var(--t2);letter-spacing:1px;text-transform:uppercase;padding:0 2px;margin-bottom:4px">Recent Predictions</div>
+          <div class="inf-pred-row">
+            <div class="inf-pred-status">&#9989;</div>
+            <div class="inf-pred-text">Rare Beauty launches in Selfridges UK by Q1 2026</div>
+            <div class="inf-pred-result hit">HIT</div>
+          </div>
+          <div class="inf-pred-row">
+            <div class="inf-pred-status">&#9989;</div>
+            <div class="inf-pred-text">Soft Pinch Blush becomes Sephora #1 face product</div>
+            <div class="inf-pred-result hit">HIT</div>
+          </div>
+          <div class="inf-pred-row">
+            <div class="inf-pred-status">&#9203;</div>
+            <div class="inf-pred-text">Rhode announces full skincare line by Q2 2026</div>
+            <div class="inf-pred-result" style="color:var(--amber)">LIVE</div>
+          </div>
+          <div class="inf-pred-row">
+            <div class="inf-pred-status">&#10060;</div>
+            <div class="inf-pred-text">Jelly blush at 3 US mass retailers by Mar 2026</div>
+            <div class="inf-pred-result miss">MISS</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- BRAND DATA -->
+<div class="data-section" id="brands">
+  <div>
+    <div class="section-label">For Brands</div>
+    <h2 class="section-title">THE EARLIEST<br><span class="ac">SIGNAL</span><br>IN CULTURE.</h2>
+    <p class="section-body">Pulse data is prospective, not retrospective. You see what culture-obsessed people <em>believe</em> is coming &mdash; weeks or months before it trends. Backed by real conviction, not passive clicks.</p>
+    <div class="data-grid reveal">
+      <div class="data-card">
+        <div class="dc-tier tier-signal">Signal Tier</div>
+        <div class="dc-price">$2&ndash;5K <span>/ mo</span></div>
+        <div class="dc-desc">Weekly trend intelligence reports. Top predictions by category, backing velocity, demographic breakdown.</div>
+        <div class="dc-features">
+          <div class="dc-feat"><div class="feat-dot"></div>Weekly category trend reports</div>
+          <div class="dc-feat"><div class="feat-dot"></div>Backing velocity data</div>
+          <div class="dc-feat"><div class="feat-dot"></div>Demographic breakdown</div>
+          <div class="dc-feat"><div class="feat-dot"></div>No platform presence</div>
+        </div>
+      </div>
+      <div class="data-card ft">
+        <div class="dc-tier tier-spotlight">Spotlight Tier</div>
+        <div class="dc-price">$10&ndash;25K <span>/ mo</span></div>
+        <div class="dc-desc">All Signal data plus sponsored category placement. Fund a reward pool redeemable for your products.</div>
+        <div class="dc-features">
+          <div class="dc-feat"><div class="feat-dot"></div>Everything in Signal</div>
+          <div class="dc-feat"><div class="feat-dot"></div>Sponsored category in feed</div>
+          <div class="dc-feat"><div class="feat-dot"></div>Brand reward pool</div>
+          <div class="dc-feat"><div class="feat-dot"></div>Creator collab matching</div>
+        </div>
+      </div>
+      <div class="data-card">
+        <div class="dc-tier tier-oracle">Oracle Tier</div>
+        <div class="dc-price">$50K+ <span>/ mo</span></div>
+        <div class="dc-desc">Custom dashboard, named brand challenges, full reward pool control, and first access to emerging verified creators.</div>
+        <div class="dc-features">
+          <div class="dc-feat"><div class="feat-dot"></div>Everything in Spotlight</div>
+          <div class="dc-feat"><div class="feat-dot"></div>Custom brand dashboard</div>
+          <div class="dc-feat"><div class="feat-dot"></div>Named brand challenges</div>
+          <div class="dc-feat"><div class="feat-dot"></div>Emerging creator access</div>
+          <div class="dc-feat"><div class="feat-dot"></div>Visual moodboard analysis</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- REWARDS -->
+<section id="rewards">
+  <div class="section-label">Rewards</div>
+  <h2 class="section-title">WIN THINGS THAT<br><span class="ac">MATTER.</span></h2>
+  <p class="section-body">When you're right, you earn Pulse Points. Redeem them for real brand rewards &mdash; the kind that used to require 50K followers and a PR contact.</p>
+  <div class="rewards-grid-port reveal">
+    <div class="rw-card-port">
+      <div class="rw-img-port"><div>&#128132;</div><div class="rw-brand-lbl">Rare Beauty</div></div>
+      <div class="rw-info-port"><div class="rw-name-port">Soft Pinch Blush duo + tote</div><div class="rw-type-port">Product gift</div><div class="rw-pts-port">&#9889; 120 pts</div></div>
+    </div>
+    <div class="rw-card-port">
+      <div class="rw-img-port"><div>&#127799;</div><div class="rw-brand-lbl">Rhode Skin</div></div>
+      <div class="rw-info-port"><div class="rw-name-port">Peptide lip treatment set</div><div class="rw-type-port">Product gift</div><div class="rw-pts-port">&#9889; 150 pts</div></div>
+    </div>
+    <div class="rw-card-port">
+      <div class="rw-img-port"><div>&#127925;</div><div class="rw-brand-lbl">Spotify</div></div>
+      <div class="rw-info-port"><div class="rw-name-port">Wrapped early preview + exclusive merch</div><div class="rw-type-port">Experience</div><div class="rw-pts-port">&#9889; 200 pts</div></div>
+    </div>
+    <div class="rw-card-port">
+      <div class="rw-img-port"><div>&#127916;</div><div class="rw-brand-lbl">A24</div></div>
+      <div class="rw-info-port"><div class="rw-name-port">Advance film screening + signed poster</div><div class="rw-type-port">Experience</div><div class="rw-pts-port">&#9889; 250 pts</div></div>
+    </div>
+    <div class="rw-card-port">
+      <div class="rw-img-port"><div>&#128092;</div><div class="rw-brand-lbl">Jacquemus</div></div>
+      <div class="rw-info-port"><div class="rw-name-port">SS27 early access drop</div><div class="rw-type-port">Early access</div><div class="rw-pts-port">&#9889; 600 pts</div></div>
+    </div>
+    <div class="rw-card-port">
+      <div class="rw-img-port"><div>&#9749;</div><div class="rw-brand-lbl">Chamberlain Coffee</div></div>
+      <div class="rw-info-port"><div class="rw-name-port">1-year subscription + merch tote</div><div class="rw-type-port">Product gift</div><div class="rw-pts-port">&#9889; 180 pts</div></div>
+    </div>
+    <div class="rw-card-port">
+      <div class="rw-img-port"><div>&#128095;</div><div class="rw-brand-lbl">Nike SB</div></div>
+      <div class="rw-info-port"><div class="rw-name-port">Limited collab first access</div><div class="rw-type-port">Early access</div><div class="rw-pts-port">&#9889; 700 pts</div></div>
+    </div>
+    <div class="rw-card-port">
+      <div class="rw-img-port"><div>&#127800;</div><div class="rw-brand-lbl">Loewe</div></div>
+      <div class="rw-info-port"><div class="rw-name-port">VIP fragrance launch event invite</div><div class="rw-type-port">Experience</div><div class="rw-pts-port">&#9889; 1200 pts</div></div>
+    </div>
+    <div class="rw-card-port">
+      <div class="rw-img-port"><div>&#128367;&#65039;</div><div class="rw-brand-lbl">Byredo</div></div>
+      <div class="rw-info-port"><div class="rw-name-port">Blanche Perfume 50ml</div><div class="rw-type-port">Product gift</div><div class="rw-pts-port">&#9889; 350 pts</div></div>
+    </div>
+    <div class="rw-card-port">
+      <div class="rw-img-port"><div>&#128139;</div><div class="rw-brand-lbl">Fenty Beauty</div></div>
+      <div class="rw-info-port"><div class="rw-name-port">Gloss Bomb + liner set</div><div class="rw-type-port">Product gift</div><div class="rw-pts-port">&#9889; 130 pts</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- FINAL CTA -->
+<div style="border-top:1px solid var(--border)">
+  <div class="final-cta" id="contact">
+    <div class="final-cta-bg"></div>
+    <h2 class="final-title">YOU<br>CALLED<br><span class="ac">IT.</span></h2>
+    <p class="final-sub">Pulse is looking for early brand partners, verified creators, and investors who get it. Let's build this.</p>
+    <div style="display:flex;gap:14px;justify-content:center;flex-wrap:wrap;position:relative">
+      <a href="/cdn-cgi/l/email-protection#9af2fff6f6f5daeaeff6e9ffb4fbeaea" class="btn-primary">Get in touch &rarr;</a>
+      <a href="#" class="btn-ghost">Download the BRD</a>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div class="footer-logo">pulse<span>.</span></div>
+  <div class="footer-copy">&copy; 2026 Pulse. Concept in development.</div>
+</footer>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+const tickerItems=[
+  '&#128293; Chappell Roan headlines Coachella 2027 &mdash; 601 backers',
+  '&#9889; Rhode full skincare line &mdash; 512 backers',
+  '&#127908; Sabrina Carpenter &times; streetwear collab &mdash; 489 backers',
+  '&#128095; Nike SB x Kai Cenat limited drop &mdash; 441 backers',
+  '&#127916; Zendaya new film role announcement &mdash; 433 backers',
+  '&#127918; Ninja exclusive streaming deal &mdash; 319 backers',
+  '&#127955; Pickleball overtakes tennis in search &mdash; 244 backers',
+  '&#9749; Chamberlain Coffee first caf&eacute; opens &mdash; 187 backers',
+  '&#128132; Rare Beauty fragrance line launch &mdash; 378 backers',
+  '&#127914; Brat summer aesthetic reaches Google Trends 80+ &mdash; 290 backers',
+];
+
+const track=document.getElementById('ticker');
+const doubled=[...tickerItems,...tickerItems];
+track.innerHTML=doubled.map(item=>`<span class="ticker-item"><span class="ticker-dot"></span><span class="ticker-hot">${item}</span></span>`).join('');
+
+window.addEventListener('scroll',()=>{
+  const nav=document.getElementById('nav');
+  nav.classList.toggle('scrolled',window.scrollY>40);
+});
+
+const reveals=document.querySelectorAll('.reveal');
+const observer=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{if(e.isIntersecting){e.target
