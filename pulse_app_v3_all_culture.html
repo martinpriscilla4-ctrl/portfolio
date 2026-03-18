@@ -1,0 +1,534 @@
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Space+Grotesk:wght@500;600;700&display=swap');
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#07070f;--bg2:#0d0d1c;--bg3:#131325;
+  --card:#111120;--card2:#181830;
+  --b:rgba(255,255,255,0.07);--b2:rgba(255,255,255,0.13);
+  --cyan:#00e5ff;--cyan2:rgba(0,229,255,0.14);--cyan3:rgba(0,229,255,0.07);
+  --pink:#ff3cac;--green:#00ff88;--amber:#ffb800;--lilac:#c084fc;--orange:#ff6b35;
+  --t:#eeeeff;--t2:#8080a8;--t3:#444466;
+  --r:14px;--r2:20px;
+}
+.app{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--t);max-width:390px;margin:0 auto;min-height:860px;position:relative;overflow:hidden;border-radius:32px;border:1px solid var(--b2)}
+.screen{display:none;flex-direction:column;height:860px}
+.screen.active{display:flex}
+.topbar{padding:16px 20px 12px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--b);background:var(--bg);flex-shrink:0}
+.logo{font-family:'Space Grotesk',sans-serif;font-size:22px;font-weight:700;letter-spacing:-0.5px;color:var(--cyan)}
+.logo span{color:var(--t)}
+.icon-btn{width:36px;height:36px;border-radius:50%;border:1px solid var(--b2);background:var(--card);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:15px}
+.pts-chip{display:inline-flex;align-items:center;gap:5px;padding:5px 12px;background:rgba(0,229,255,0.1);border:1px solid rgba(0,229,255,0.22);border-radius:20px;font-size:12px;font-weight:600;color:var(--cyan)}
+.scroll-area{flex:1;overflow-y:auto;padding-bottom:72px}
+.scroll-area::-webkit-scrollbar{display:none}
+.tabs{display:flex;padding:0 14px;border-bottom:1px solid var(--b);background:var(--bg);flex-shrink:0;overflow-x:auto;gap:2px}
+.tabs::-webkit-scrollbar{display:none}
+.tab{padding:11px 11px 9px;font-size:12px;font-weight:500;color:var(--t2);cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;transition:all .15s}
+.tab.active{color:var(--cyan);border-bottom-color:var(--cyan)}
+.feed{padding:14px 14px 0;display:flex;flex-direction:column;gap:13px}
+.pcard{background:var(--card);border:1px solid var(--b);border-radius:var(--r2);overflow:hidden;cursor:pointer;transition:border-color .15s}
+.pcard:hover{border-color:var(--b2)}
+.pcard.hot{border-color:rgba(0,229,255,0.25)}
+.pcard.fan{border-color:rgba(255,184,0,0.2)}
+.pcard.spons{border-color:rgba(192,132,252,0.2)}
+.card-top{padding:13px 15px 10px;display:flex;align-items:center;gap:10px}
+.av{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;letter-spacing:-0.3px}
+.av1{background:rgba(0,229,255,0.18);color:var(--cyan)}
+.av2{background:rgba(255,60,172,0.18);color:var(--pink)}
+.av3{background:rgba(0,255,136,0.18);color:var(--green)}
+.av4{background:rgba(255,184,0,0.18);color:var(--amber)}
+.av5{background:rgba(192,132,252,0.18);color:var(--lilac)}
+.av6{background:rgba(255,107,53,0.18);color:var(--orange)}
+.uname{font-size:13px;font-weight:500;color:var(--t);display:flex;align-items:center;gap:4px;flex-wrap:wrap}
+.vbadge{font-size:10px;color:var(--cyan)}
+.umeta{font-size:11px;color:var(--t2);margin-top:2px;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.cpill{padding:2px 8px;border-radius:20px;font-size:10px;font-weight:600;border:1px solid;white-space:nowrap}
+.c-music{background:rgba(192,132,252,0.1);color:var(--lilac);border-color:rgba(192,132,252,0.3)}
+.c-fashion{background:rgba(255,60,172,0.1);color:var(--pink);border-color:rgba(255,60,172,0.25)}
+.c-beauty{background:rgba(255,184,0,0.1);color:var(--amber);border-color:rgba(255,184,0,0.25)}
+.c-lifestyle{background:rgba(0,229,255,0.1);color:var(--cyan);border-color:rgba(0,229,255,0.25)}
+.c-art{background:rgba(0,255,136,0.1);color:var(--green);border-color:rgba(0,255,136,0.25)}
+.c-sports{background:rgba(255,107,53,0.1);color:var(--orange);border-color:rgba(255,107,53,0.25)}
+.c-food{background:rgba(255,184,0,0.1);color:var(--amber);border-color:rgba(255,184,0,0.25)}
+.c-tech{background:rgba(0,229,255,0.1);color:var(--cyan);border-color:rgba(0,229,255,0.25)}
+.c-gaming{background:rgba(0,255,136,0.1);color:var(--green);border-color:rgba(0,255,136,0.25)}
+.c-film{background:rgba(255,107,53,0.1);color:var(--orange);border-color:rgba(255,107,53,0.25)}
+.hot-badge{padding:2px 8px;border-radius:20px;background:rgba(0,229,255,0.12);border:1px solid rgba(0,229,255,0.3);font-size:10px;font-weight:700;color:var(--cyan);white-space:nowrap}
+.bar-spons{padding:5px 14px;background:rgba(192,132,252,0.07);border-bottom:1px solid rgba(192,132,252,0.15);font-size:11px;color:rgba(192,132,252,0.85);display:flex;align-items:center;gap:5px}
+.bar-fan{padding:5px 14px;background:rgba(255,184,0,0.07);border-bottom:1px solid rgba(255,184,0,0.15);font-size:11px;color:rgba(255,184,0,0.85);display:flex;align-items:center;gap:5px}
+.mboard{width:100%;aspect-ratio:16/9;display:grid;grid-template-columns:1fr 1fr 1fr;gap:2px;overflow:hidden}
+.mbi{background:var(--card2);display:flex;align-items:center;justify-content:center;font-size:24px}
+.mbi.big{grid-row:span 2;font-size:36px}
+.claim-area{padding:13px 15px 11px}
+.claim{font-size:14px;line-height:1.5;color:var(--t);margin-bottom:9px}
+.claim strong{color:var(--cyan);font-weight:500}
+.dlabel{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--t2);margin-bottom:11px}
+.ddot{width:6px;height:6px;border-radius:50%;background:var(--amber);flex-shrink:0}
+.ddot.live{background:var(--green)}
+.hbar{height:3px;background:var(--bg3);border-radius:2px;margin-bottom:12px;overflow:hidden}
+.hfill{height:100%;border-radius:2px;background:linear-gradient(90deg,var(--cyan),var(--pink));transition:width .4s}
+.cstats{display:flex;align-items:center;justify-content:space-between}
+.stat{font-size:12px;color:var(--t2)}
+.stat strong{color:var(--t);font-weight:500}
+.cactions{padding:9px 15px 13px;display:flex;align-items:center;gap:8px;border-top:1px solid var(--b)}
+.backbtn{flex:1;padding:9px 0;border-radius:10px;border:1px solid var(--cyan);background:var(--cyan3);color:var(--cyan);font-size:13px;font-weight:600;cursor:pointer;text-align:center;transition:all .15s;font-family:'DM Sans',sans-serif}
+.backbtn:hover{background:var(--cyan2)}
+.backbtn.backed{background:var(--cyan);color:var(--bg)}
+.nobtn{padding:9px 13px;border-radius:10px;border:1px solid var(--b2);background:transparent;color:var(--t2);font-size:13px;font-weight:500;cursor:pointer;transition:all .15s;font-family:'DM Sans',sans-serif}
+.nobtn:hover{border-color:rgba(255,60,172,0.35);color:var(--pink)}
+.section-lbl{padding:18px 16px 8px;font-size:10px;font-weight:700;color:var(--t2);letter-spacing:1.2px;text-transform:uppercase}
+.trow{padding:0 14px;display:flex;flex-direction:column;gap:9px}
+.titem{background:var(--card);border:1px solid var(--b);border-radius:var(--r);padding:11px 13px;display:flex;align-items:center;gap:11px;cursor:pointer;transition:border-color .15s}
+.titem:hover{border-color:var(--b2)}
+.trank{font-size:13px;font-weight:700;color:var(--t2);min-width:20px}
+.trank.top{color:var(--cyan)}
+.tinfo{flex:1}
+.tclaim{font-size:13px;font-weight:500;color:var(--t);line-height:1.3}
+.tmeta{font-size:11px;color:var(--t2);margin-top:3px}
+.tvel{font-size:12px;font-weight:600;color:var(--green);white-space:nowrap}
+.lbrow{padding:0 14px;display:flex;flex-direction:column;gap:8px}
+.lbitem{background:var(--card);border:1px solid var(--b);border-radius:var(--r);padding:11px 13px;display:flex;align-items:center;gap:11px}
+.lbrank{font-size:15px;font-weight:700;min-width:22px}
+.r1{color:var(--amber)}.r2{color:#aaa}.r3{color:#cd7f32}.rn{color:var(--t2)}
+.lbu{flex:1}
+.lbname{font-size:13px;font-weight:500;color:var(--t)}
+.lbtier{font-size:11px;color:var(--t2);margin-top:2px}
+.lbstat{text-align:right}
+.lbacc{font-size:15px;font-weight:700;color:var(--cyan)}
+.lbcalls{font-size:10px;color:var(--t2)}
+.tbadge{display:inline-flex;align-items:center;gap:3px;padding:2px 7px;border-radius:20px;font-size:10px;font-weight:600}
+.t-oracle{background:rgba(0,229,255,0.13);color:var(--cyan);border:1px solid rgba(0,229,255,0.3)}
+.t-fore{background:rgba(0,255,136,0.11);color:var(--green);border:1px solid rgba(0,255,136,0.25)}
+.t-spot{background:rgba(255,184,0,0.11);color:var(--amber);border:1px solid rgba(255,184,0,0.25)}
+.t-nov{background:rgba(128,128,168,0.11);color:var(--t2);border:1px solid var(--b2)}
+.profile-top{padding:22px 16px 0;display:flex;align-items:flex-start;gap:14px}
+.bigav{width:64px;height:64px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:700;border:2px solid var(--cyan);background:rgba(0,229,255,0.14);color:var(--cyan);flex-shrink:0}
+.pname{font-family:'Space Grotesk',sans-serif;font-size:20px;font-weight:700}
+.phandle{font-size:13px;color:var(--t2);margin-top:2px}
+.vtag{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;background:rgba(0,229,255,0.1);border:1px solid rgba(0,229,255,0.25);border-radius:20px;font-size:10px;font-weight:600;color:var(--cyan)}
+.ptags{margin-top:9px;display:flex;gap:6px;flex-wrap:wrap}
+.statsrow{display:grid;grid-template-columns:1fr 1fr 1fr;gap:9px;padding:16px 14px}
+.sbox{background:var(--card);border:1px solid var(--b);border-radius:var(--r);padding:11px;text-align:center}
+.snum{font-family:'Space Grotesk',sans-serif;font-size:21px;font-weight:700;color:var(--cyan)}
+.slbl{font-size:10px;color:var(--t2);margin-top:3px;text-transform:uppercase;letter-spacing:0.5px}
+.rwgrid{padding:0 14px;display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.rwcard{background:var(--card);border:1px solid var(--b);border-radius:var(--r2);overflow:hidden;cursor:pointer;transition:border-color .15s}
+.rwcard:hover{border-color:var(--b2)}
+.rwcard.ft{border-color:rgba(0,229,255,0.28)}
+.rwimg{aspect-ratio:1;background:var(--card2);display:flex;align-items:center;justify-content:center;font-size:34px;position:relative}
+.rw-overlay{position:absolute;bottom:0;left:0;right:0;padding:4px 8px;background:rgba(7,7,15,0.78);font-size:9px;font-weight:700;letter-spacing:0.7px;color:var(--t2);text-transform:uppercase}
+.rwinfo{padding:9px 11px 11px}
+.rwname{font-size:12px;font-weight:500;color:var(--t);line-height:1.3}
+.rwtype{font-size:10px;color:var(--t2);margin-top:3px}
+.rwbot{margin-top:8px;display:flex;align-items:center;justify-content:space-between}
+.rwpts{font-size:13px;font-weight:700;color:var(--cyan)}
+.redbtn{padding:5px 9px;border-radius:8px;background:var(--cyan);color:var(--bg);font-size:11px;font-weight:700;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;white-space:nowrap}
+.redbtn.locked{background:var(--card2);color:var(--t2);border:1px solid var(--b2)}
+.tier-prog{padding:0 14px 14px}
+.tcard{background:var(--card);border:1px solid rgba(0,229,255,0.2);border-radius:var(--r2);padding:15px}
+.ttop{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.ttitle{font-family:'Space Grotesk',sans-serif;font-size:18px;font-weight:700;color:var(--cyan)}
+.tsub{font-size:12px;color:var(--t2);margin-top:2px}
+.tpbar{height:4px;background:var(--bg3);border-radius:2px;overflow:hidden}
+.tpfill{height:100%;border-radius:2px;background:linear-gradient(90deg,var(--cyan),var(--pink))}
+.tplbls{display:flex;justify-content:space-between;margin-top:6px}
+.tplbl{font-size:10px;color:var(--t2)}
+.tplbl.next{color:var(--cyan);font-weight:500}
+.bnav{display:flex;border-top:1px solid var(--b);background:rgba(7,7,15,0.97);padding:10px 0 14px;flex-shrink:0}
+.nitem{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;padding:3px 0}
+.nicn{font-size:18px}
+.nlbl{font-size:10px;font-weight:500;color:var(--t2)}
+.nitem.active .nlbl{color:var(--cyan)}
+.fab{width:50px;height:50px;border-radius:50%;background:var(--cyan);border:none;display:flex;align-items:center;justify-content:center;font-size:22px;color:var(--bg);cursor:pointer;font-weight:700;margin-top:-20px;transition:transform .15s;font-family:'DM Sans',sans-serif;flex-shrink:0}
+.fab:hover{transform:scale(1.08)}
+.toast{position:absolute;bottom:82px;left:50%;transform:translateX(-50%);background:var(--cyan);color:var(--bg);padding:9px 18px;border-radius:30px;font-size:12px;font-weight:700;opacity:0;transition:opacity .25s;pointer-events:none;white-space:nowrap;z-index:99;font-family:'DM Sans',sans-serif}
+.toast.show{opacity:1}
+.cat-filter{display:flex;gap:7px;padding:12px 14px;overflow-x:auto;flex-shrink:0;border-bottom:1px solid var(--b)}
+.cat-filter::-webkit-scrollbar{display:none}
+.cfbtn{padding:6px 13px;border-radius:20px;font-size:11px;font-weight:600;border:1px solid var(--b2);background:transparent;color:var(--t2);cursor:pointer;white-space:nowrap;transition:all .15s;font-family:'DM Sans',sans-serif}
+.cfbtn.on{border-color:var(--cyan);background:var(--cyan3);color:var(--cyan)}
+</style>
+
+<div class="app" id="app">
+
+<div class="screen active" id="s-feed">
+  <div class="topbar">
+    <div class="logo">pulse<span>.</span></div>
+    <div style="display:flex;gap:8px;align-items:center">
+      <div class="pts-chip">⚡ 340 pts</div>
+      <div class="icon-btn">🔔</div>
+    </div>
+  </div>
+  <div class="tabs">
+    <div class="tab active" onclick="setTab(this,'all')">For You</div>
+    <div class="tab" onclick="setTab(this,'music')">Music</div>
+    <div class="tab" onclick="setTab(this,'fashion')">Fashion</div>
+    <div class="tab" onclick="setTab(this,'sports')">Sports</div>
+    <div class="tab" onclick="setTab(this,'beauty')">Beauty</div>
+    <div class="tab" onclick="setTab(this,'gaming')">Gaming</div>
+    <div class="tab" onclick="setTab(this,'film')">Film & TV</div>
+  </div>
+  <div class="scroll-area"><div class="feed" id="feed-list"></div></div>
+  <nav class="bnav">
+    <div class="nitem active" id="n-feed" onclick="go('feed')"><div class="nicn">◈</div><div class="nlbl">Feed</div></div>
+    <div class="nitem" id="n-trending" onclick="go('trending')"><div class="nicn">↑</div><div class="nlbl">Trending</div></div>
+    <button class="fab" onclick="go('create')">+</button>
+    <div class="nitem" id="n-rewards" onclick="go('rewards')"><div class="nicn">⬡</div><div class="nlbl">Rewards</div></div>
+    <div class="nitem" id="n-profile" onclick="go('profile')"><div class="nicn">◯</div><div class="nlbl">Me</div></div>
+  </nav>
+</div>
+
+<div class="screen" id="s-trending">
+  <div class="topbar"><div class="logo">pulse<span>.</span></div><div class="icon-btn">🔍</div></div>
+  <div class="scroll-area">
+    <div class="section-lbl">🔥 Trending Now</div>
+    <div class="trow" id="trend-list"></div>
+    <div class="section-lbl">🏆 Top Forecasters</div>
+    <div class="lbrow" id="lb-list"></div>
+  </div>
+  <nav class="bnav">
+    <div class="nitem" id="n2-feed" onclick="go('feed')"><div class="nicn">◈</div><div class="nlbl">Feed</div></div>
+    <div class="nitem active" id="n2-trending" onclick="go('trending')"><div class="nicn">↑</div><div class="nlbl">Trending</div></div>
+    <button class="fab" onclick="go('create')">+</button>
+    <div class="nitem" id="n2-rewards" onclick="go('rewards')"><div class="nicn">⬡</div><div class="nlbl">Rewards</div></div>
+    <div class="nitem" id="n2-profile" onclick="go('profile')"><div class="nicn">◯</div><div class="nlbl">Me</div></div>
+  </nav>
+</div>
+
+<div class="screen" id="s-create">
+  <div class="topbar"><div class="logo">pulse<span>.</span></div><div class="icon-btn" onclick="go('feed')">✕</div></div>
+  <div class="scroll-area" id="create-scroll">
+    <div id="success-wrap" style="display:none;min-height:400px;align-items:center;justify-content:center;flex-direction:column;gap:14px;padding:40px;text-align:center">
+      <div style="font-size:54px">✦</div>
+      <div style="font-family:'Space Grotesk',sans-serif;font-size:26px;font-weight:700;color:var(--cyan)">Call published.</div>
+      <div style="font-size:14px;color:var(--t2);line-height:1.6">Your Prediction is live.<br>Let the world back you — or not.</div>
+      <button onclick="document.getElementById('success-wrap').style.display='none';document.getElementById('create-form').style.display='block';go('feed')" style="margin-top:8px;padding:14px 32px;border-radius:14px;background:var(--cyan);border:none;color:var(--bg);font-size:14px;font-weight:700;cursor:pointer;font-family:'Space Grotesk',sans-serif">Back to feed</button>
+    </div>
+    <div id="create-form" style="padding:18px 16px 90px">
+      <div style="font-family:'Space Grotesk',sans-serif;font-size:21px;font-weight:700;margin-bottom:4px">Make your call.</div>
+      <div style="font-size:13px;color:var(--t2);margin-bottom:22px">Build the moodboard. State the prediction. Set the deadline.</div>
+      <div style="font-size:10px;font-weight:700;color:var(--t2);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px">Moodboard</div>
+      <div id="mb-g" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:5px;background:var(--card);border:1px dashed var(--b2);border-radius:var(--r);padding:6px;min-height:130px">
+        <div style="aspect-ratio:1;border-radius:8px;background:var(--bg3);display:flex;align-items:center;justify-content:center;font-size:28px">🎵</div>
+        <div style="aspect-ratio:1;border-radius:8px;background:var(--bg3);display:flex;align-items:center;justify-content:center;font-size:28px">🎤</div>
+        <div style="aspect-ratio:1;border-radius:8px;background:var(--bg3);display:flex;align-items:center;justify-content:center;font-size:28px">✨</div>
+        <div style="aspect-ratio:1;border-radius:8px;background:var(--bg3);display:flex;align-items:center;justify-content:center;font-size:28px">🌙</div>
+        <div style="aspect-ratio:1;border-radius:8px;background:var(--bg3);display:flex;align-items:center;justify-content:center;font-size:28px">🎶</div>
+        <div id="add-slot" style="aspect-ratio:1;border-radius:8px;background:var(--bg3);border:1px dashed var(--b2);display:flex;align-items:center;justify-content:center;font-size:20px;color:var(--t2);cursor:pointer" onclick="addMb()">+</div>
+      </div>
+      <div id="mb-cnt" style="text-align:right;font-size:10px;color:var(--t2);margin-top:4px">5 / 12 images</div>
+      <div style="font-size:10px;font-weight:700;color:var(--t2);letter-spacing:1px;text-transform:uppercase;margin:18px 0 8px">Your prediction</div>
+      <textarea id="claim-in" style="width:100%;background:var(--card);border:1px solid var(--b2);border-radius:var(--r);padding:11px 13px;color:var(--t);font-size:14px;font-family:'DM Sans',sans-serif;resize:none;outline:none;transition:border-color .15s" rows="3" maxlength="140" placeholder="Sabrina Carpenter will drop a collab with a streetwear brand before June 2026..." oninput="document.getElementById('cc').textContent=this.value.length+' / 140'"></textarea>
+      <div id="cc" style="text-align:right;font-size:10px;color:var(--t2);margin-top:4px">0 / 140</div>
+      <div style="font-size:10px;font-weight:700;color:var(--t2);letter-spacing:1px;text-transform:uppercase;margin:18px 0 8px">Category</div>
+      <div style="display:flex;flex-wrap:wrap;gap:7px">
+        <button class="cfbtn on" onclick="selCat(this)">Music</button>
+        <button class="cfbtn" onclick="selCat(this)">Fashion</button>
+        <button class="cfbtn" onclick="selCat(this)">Beauty</button>
+        <button class="cfbtn" onclick="selCat(this)">Sports</button>
+        <button class="cfbtn" onclick="selCat(this)">Gaming</button>
+        <button class="cfbtn" onclick="selCat(this)">Film & TV</button>
+        <button class="cfbtn" onclick="selCat(this)">Food & Drink</button>
+        <button class="cfbtn" onclick="selCat(this)">Art & Design</button>
+        <button class="cfbtn" onclick="selCat(this)">Tech</button>
+        <button class="cfbtn" onclick="selCat(this)">Lifestyle</button>
+      </div>
+      <div style="font-size:10px;font-weight:700;color:var(--t2);letter-spacing:1px;text-transform:uppercase;margin:18px 0 8px">How it resolves</div>
+      <div style="display:flex;flex-direction:column;gap:7px">
+        <div class="titem" style="border-color:var(--cyan);background:var(--cyan3)" onclick="selRes(event)"><span style="font-size:15px">🎵</span><span style="font-size:13px;color:var(--cyan)">Artist announcement / release</span></div>
+        <div class="titem" onclick="selRes(event)"><span style="font-size:15px">🛍️</span><span style="font-size:13px;color:var(--t)">Retail / commercial launch</span></div>
+        <div class="titem" onclick="selRes(event)"><span style="font-size:15px">📈</span><span style="font-size:13px;color:var(--t)">Google Trends score</span></div>
+        <div class="titem" onclick="selRes(event)"><span style="font-size:15px">📱</span><span style="font-size:13px;color:var(--t)">Social media milestone</span></div>
+        <div class="titem" onclick="selRes(event)"><span style="font-size:15px">🏆</span><span style="font-size:13px;color:var(--t)">Award / chart position</span></div>
+        <div class="titem" onclick="selRes(event)"><span style="font-size:15px">⭐</span><span style="font-size:13px;color:var(--t)">Influencer action / collab</span></div>
+      </div>
+      <div style="font-size:10px;font-weight:700;color:var(--t2);letter-spacing:1px;text-transform:uppercase;margin:18px 0 8px">Deadline</div>
+      <input type="date" id="dl-in" style="width:100%;background:var(--card);border:1px solid var(--b2);border-radius:var(--r);padding:11px 13px;color:var(--t);font-size:14px;font-family:'DM Sans',sans-serif;outline:none;cursor:pointer">
+      <button onclick="publish()" style="width:100%;padding:15px;border-radius:14px;background:var(--cyan);border:none;color:var(--bg);font-size:15px;font-weight:700;cursor:pointer;margin-top:26px;font-family:'Space Grotesk',sans-serif;transition:opacity .15s">Publish Prediction →</button>
+    </div>
+  </div>
+  <nav class="bnav">
+    <div class="nitem" onclick="go('feed')"><div class="nicn">◈</div><div class="nlbl">Feed</div></div>
+    <div class="nitem" onclick="go('trending')"><div class="nicn">↑</div><div class="nlbl">Trending</div></div>
+    <button class="fab" style="background:var(--card2);color:var(--t2);box-shadow:none" onclick="go('create')">+</button>
+    <div class="nitem" onclick="go('rewards')"><div class="nicn">⬡</div><div class="nlbl">Rewards</div></div>
+    <div class="nitem" onclick="go('profile')"><div class="nicn">◯</div><div class="nlbl">Me</div></div>
+  </nav>
+</div>
+
+<div class="screen" id="s-rewards">
+  <div class="topbar"><div class="logo">pulse<span>.</span></div><div class="pts-chip">⚡ 340 pts</div></div>
+  <div class="scroll-area">
+    <div style="padding:18px 16px 10px">
+      <div style="font-family:'Space Grotesk',sans-serif;font-size:20px;font-weight:700">Rewards</div>
+      <div style="font-size:13px;color:var(--t2);margin-top:4px">You called it. Now cash in.</div>
+    </div>
+    <div class="section-lbl">Your Tier</div>
+    <div class="tier-prog">
+      <div class="tcard">
+        <div class="ttop">
+          <div><div class="ttitle">Forecaster</div><div class="tsub">68% accuracy · 24 correct calls</div></div>
+          <div style="font-size:34px">🔮</div>
+        </div>
+        <div class="tpbar"><div class="tpfill" style="width:68%"></div></div>
+        <div class="tplbls"><div class="tplbl">Spotter</div><div class="tplbl next">7 more correct → Oracle ✦</div></div>
+      </div>
+    </div>
+    <div class="section-lbl">Redeem</div>
+    <div class="rwgrid" id="rw-grid"></div>
+    <div style="height:20px"></div>
+  </div>
+  <nav class="bnav">
+    <div class="nitem" onclick="go('feed')"><div class="nicn">◈</div><div class="nlbl">Feed</div></div>
+    <div class="nitem" onclick="go('trending')"><div class="nicn">↑</div><div class="nlbl">Trending</div></div>
+    <button class="fab" onclick="go('create')">+</button>
+    <div class="nitem active" onclick="go('rewards')"><div class="nicn">⬡</div><div class="nlbl">Rewards</div></div>
+    <div class="nitem" onclick="go('profile')"><div class="nicn">◯</div><div class="nlbl">Me</div></div>
+  </nav>
+</div>
+
+<div class="screen" id="s-profile">
+  <div class="topbar"><div class="logo">pulse<span>.</span></div><div class="icon-btn">⚙️</div></div>
+  <div class="scroll-area">
+    <div class="profile-top">
+      <div class="bigav">JS</div>
+      <div style="flex:1;padding-top:4px">
+        <div class="pname">Jake Shane</div>
+        <div class="phandle">@jakeshane · <span class="tbadge t-oracle">✦ Oracle</span></div>
+        <div class="ptags">
+          <div class="vtag">✦ Verified Creator</div>
+          <div style="display:inline-flex;align-items:center;gap:4px;padding:3px 9px;background:rgba(192,132,252,0.1);border:1px solid rgba(192,132,252,0.25);border-radius:20px;font-size:10px;font-weight:600;color:var(--lilac)">⭐ Brand Sponsored</div>
+        </div>
+      </div>
+    </div>
+    <div class="statsrow">
+      <div class="sbox"><div class="snum">52</div><div class="slbl">Calls</div></div>
+      <div class="sbox"><div class="snum" style="color:var(--green)">81%</div><div class="slbl">Accuracy</div></div>
+      <div class="sbox"><div class="snum" style="color:var(--amber)">3.4k</div><div class="slbl">Backers</div></div>
+    </div>
+    <div class="section-lbl">Recent Predictions</div>
+    <div class="feed" id="prof-feed" style="padding:0 14px 16px"></div>
+  </div>
+  <nav class="bnav">
+    <div class="nitem" onclick="go('feed')"><div class="nicn">◈</div><div class="nlbl">Feed</div></div>
+    <div class="nitem" onclick="go('trending')"><div class="nicn">↑</div><div class="nlbl">Trending</div></div>
+    <button class="fab" onclick="go('create')">+</button>
+    <div class="nitem" onclick="go('rewards')"><div class="nicn">⬡</div><div class="nlbl">Rewards</div></div>
+    <div class="nitem active" onclick="go('profile')"><div class="nicn">◯</div><div class="nlbl">Me</div></div>
+  </nav>
+</div>
+
+<div class="toast" id="toast"></div>
+</div>
+
+<script>
+const PTS=340;
+const backed=new Set();
+
+const preds=[
+  {id:1,user:'jakeshane',ini:'JS',av:'av1',verified:true,sponsored:'RHODE SKIN',fan:false,
+   cat:'Beauty',cc:'c-beauty',claim:'<strong>Rhode</strong> will announce a full skincare line (not just lip products) before end of Q2 2026',
+   deadline:'30 Jun 2026',hot:true,backers:512,heat:91,emojis:['🌷','💆','✨','🧴']},
+  {id:2,user:'popculture.calls',ini:'PC',av:'av2',verified:false,sponsored:null,fan:true,fanLabel:'Fan Prediction about @sabrinacarpenter',
+   cat:'Music',cc:'c-music',claim:'<strong>Sabrina Carpenter</strong> drops a surprise collab with a streetwear brand before her next tour leg',
+   deadline:'1 Aug 2026',hot:true,backers:489,heat:87,emojis:['🎤','🌸','👗','🎶']},
+  {id:3,user:'acquired.style',ini:'AS',av:'av3',verified:true,sponsored:null,fan:false,
+   cat:'Fashion',cc:'c-fashion',claim:'<strong>Kai Cenat</strong> launches his own merch brand — not a collab, a standalone label — by Dec 2026',
+   deadline:'31 Dec 2026',hot:false,backers:367,heat:72,emojis:['🎮','🔥','👕','⚡']},
+  {id:4,user:'sportstrender',ini:'ST',av:'av4',verified:false,sponsored:null,fan:true,fanLabel:'Fan Prediction about @lebronjames',
+   cat:'Sports',cc:'c-sports',claim:'<strong>LeBron James</strong> will announce a film or TV production deal before the NBA season ends',
+   deadline:'15 Jun 2026',hot:false,backers:298,heat:61,emojis:['🏀','🎬','👑','🎥']},
+  {id:5,user:'chartsandcalls',ini:'CC',av:'av5',verified:true,sponsored:null,fan:false,
+   cat:'Music',cc:'c-music',claim:'<strong>Chappell Roan</strong> will headline a major festival (Coachella, Glastonbury, or Lolla) before end of 2026',
+   deadline:'31 Dec 2026',hot:true,backers:601,heat:94,emojis:['🎪','🌈','🎤','🌙']},
+  {id:6,user:'paige.lorenze',ini:'PL',av:'av6',verified:true,sponsored:'ADIDAS',fan:false,
+   cat:'Sports',cc:'c-sports',claim:'<strong>Pickleball</strong> overtakes tennis in US Google search volume by September 2026',
+   deadline:'30 Sept 2026',hot:false,backers:244,heat:55,emojis:['🏓','🎾','👟','📈']},
+  {id:7,user:'streamwatch',ini:'SW',av:'av2',verified:false,sponsored:null,fan:true,fanLabel:'Fan Prediction about @zendaya',
+   cat:'Film & TV',cc:'c-film',claim:'<strong>Zendaya</strong> will be announced for a new film role (not a sequel) before mid-2026',
+   deadline:'30 Jun 2026',hot:false,backers:433,heat:79,emojis:['🎬','⭐','🎭','✨']},
+  {id:8,user:'mrdoobs_pulse',ini:'MD',av:'av3',verified:true,sponsored:null,fan:false,
+   cat:'Gaming',cc:'c-gaming',claim:'<strong>Ninja</strong> returns to full-time streaming on a non-Twitch platform with an exclusive deal by Q3 2026',
+   deadline:'30 Sept 2026',hot:false,backers:319,heat:67,emojis:['🎮','📺','💜','⚡']},
+  {id:9,user:'alixearle',ini:'AE',av:'av1',verified:true,sponsored:'RARE BEAUTY',fan:false,
+   cat:'Beauty',cc:'c-beauty',claim:'<strong>Rare Beauty</strong> launches a fragrance line — full eau de parfum, not just body mist — by end of 2026',
+   deadline:'31 Dec 2026',hot:false,backers:378,heat:73,emojis:['💄','🌸','🫧','✦']},
+  {id:10,user:'foodpulse',ini:'FP',av:'av4',verified:false,sponsored:null,fan:false,
+   cat:'Food & Drink',cc:'c-food',claim:'<strong>Chamberlain Coffee</strong> opens its first physical café location in LA or NYC before end of 2026',
+   deadline:'31 Dec 2026',hot:false,backers:187,heat:44,emojis:['☕','🏙️','🌿','📍']},
+];
+
+const trending=[
+  {rank:1,claim:'Chappell Roan headlines Coachella 2027',cat:'Music',vel:'+112/hr',n:601},
+  {rank:2,claim:'Sabrina Carpenter × streetwear collab incoming',cat:'Music',vel:'+89/hr',n:489},
+  {rank:3,claim:'Rhode expanding beyond lip care',cat:'Beauty',vel:'+71/hr',n:512},
+  {rank:4,claim:'Kai Cenat standalone merch brand launch',cat:'Fashion',vel:'+58/hr',n:367},
+  {rank:5,claim:'Zendaya new film announcement imminent',cat:'Film & TV',vel:'+47/hr',n:433},
+  {rank:6,claim:'Ninja exclusive streaming deal Q3',cat:'Gaming',vel:'+39/hr',n:319},
+  {rank:7,claim:'Pickleball overtakes tennis in search',cat:'Sports',vel:'+28/hr',n:244},
+  {rank:8,claim:'Rare Beauty fragrance line coming',cat:'Beauty',vel:'+24/hr',n:378},
+  {rank:9,claim:'LeBron film/TV production deal soon',cat:'Sports',vel:'+19/hr',n:298},
+  {rank:10,claim:'Chamberlain Coffee opens first café',cat:'Food & Drink',vel:'+14/hr',n:187},
+];
+
+const leaderboard=[
+  {rank:1,name:'chartsandcalls',tier:'Oracle',acc:91,calls:58},
+  {rank:2,name:'jakeshane',tier:'Oracle',acc:81,calls:52},
+  {rank:3,name:'acquired.style',tier:'Oracle',acc:79,calls:44},
+  {rank:4,name:'alixearle',tier:'Oracle',acc:77,calls:47},
+  {rank:5,name:'paige.lorenze',tier:'Forecaster',acc:71,calls:39},
+  {rank:6,name:'you',tier:'Forecaster',acc:68,calls:24},
+  {rank:7,name:'streamwatch',tier:'Spotter',acc:61,calls:22},
+];
+
+const rewards=[
+  {brand:'RARE BEAUTY',name:'Soft Pinch Blush + tote bag',pts:120,emoji:'💄',type:'Product gift',ft:true},
+  {brand:'RHODE SKIN',name:'Peptide lip treatment set',pts:150,emoji:'🌷',type:'Product gift',ft:true},
+  {brand:'ADIDAS',name:'Samba collab — first drop access',pts:500,emoji:'👟',type:'Early access',ft:false},
+  {brand:'SPOTIFY',name:'Wrapped early preview + merch',pts:200,emoji:'🎵',type:'Experience',ft:false},
+  {brand:'JACQUEMUS',name:'SS27 drop early access',pts:600,emoji:'👜',type:'Early access',ft:false},
+  {brand:'CHAMBERLAIN COFFEE',name:'1-year subscription + tote',pts:180,emoji:'☕',type:'Product gift',ft:false},
+  {brand:'NEW BALANCE',name:'860v2 pre-release pair',pts:800,emoji:'👟',type:'Early access',ft:false},
+  {brand:'FENTY BEAUTY',name:'Gloss Bomb + lip liner set',pts:130,emoji:'💋',type:'Product gift',ft:false},
+  {brand:'GLOSSIER',name:'Cloud Paint duo + merch',pts:100,emoji:'🫧',type:'Product gift',ft:false},
+  {brand:'LOEWE',name:'Fragrance VIP event invite',pts:1200,emoji:'🌸',type:'Experience',ft:false},
+  {brand:'A24',name:'Advance film screening + poster',pts:250,emoji:'🎬',type:'Experience',ft:false},
+  {brand:'BYREDO',name:'Blanche Perfume 50ml',pts:350,emoji:'🕯️',type:'Product gift',ft:false},
+  {brand:'NIKE SB',name:'Limited collab drop — first access',pts:700,emoji:'🛹',type:'Early access',ft:false},
+  {brand:'TOTEME',name:'25% off next order',pts:80,emoji:'🧥',type:'Discount',ft:false},
+];
+
+let activeFilter='all';
+
+function card(p){
+  const sb=p.sponsored?`<div class="bar-spons">⭐ Sponsored by ${p.sponsored}</div>`:'';
+  const fb=p.fan?`<div class="bar-fan">👁 ${p.fanLabel}</div>`:'';
+  const imgs=p.emojis.map((e,i)=>`<div class="mbi${i===0?' big':''}">${e}</div>`).join('');
+  const isB=backed.has(p.id);
+  const cls=['pcard',p.hot?'hot':'',p.fan?'fan':'',p.sponsored?'spons':''].filter(Boolean).join(' ');
+  return`<div class="${cls}">
+    ${sb}${fb}
+    <div class="card-top">
+      <div class="av ${p.av}">${p.ini}</div>
+      <div style="flex:1;min-width:0">
+        <div class="uname">@${p.user}${p.verified?'<span class="vbadge">✦</span>':''}</div>
+        <div class="umeta"><span class="cpill ${p.cc}">${p.cat}</span></div>
+      </div>
+      ${p.hot?'<div class="hot-badge">🔥 HOT</div>':''}
+    </div>
+    <div class="mboard">${imgs}</div>
+    <div class="claim-area">
+      <div class="claim">${p.claim}</div>
+      <div class="dlabel"><div class="ddot${p.heat>75?' live':''}"></div>Resolves ${p.deadline}</div>
+      <div class="hbar"><div class="hfill" id="hf-${p.id}" style="width:${p.heat}%"></div></div>
+      <div class="cstats"><div class="stat"><strong>${p.backers}</strong> backers</div><div class="stat">${500-p.backers} spots left</div></div>
+    </div>
+    <div class="cactions">
+      <button class="backbtn${isB?' backed':''}" id="bb-${p.id}" onclick="backIt(${p.id})">${isB?'✓ Backed':'⚡ Back this'}</button>
+      <button class="nobtn" onclick="toast('Counter noted — you\'re on the record')">No way</button>
+    </div>
+  </div>`;
+}
+
+const catMap={music:'c-music',fashion:'c-fashion',beauty:'c-beauty',sports:'c-sports',gaming:'c-gaming','film & tv':'c-film','food & drink':'c-food'};
+
+function renderFeed(filter){
+  const list=filter==='all'?preds:preds.filter(p=>p.cat.toLowerCase()===filter);
+  document.getElementById('feed-list').innerHTML=list.map(card).join('');
+}
+
+function setTab(el,filter){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  activeFilter=filter;
+  renderFeed(filter);
+}
+
+function renderTrending(){
+  document.getElementById('trend-list').innerHTML=trending.map(t=>`
+    <div class="titem">
+      <div class="trank${t.rank<=3?' top':''}">#${t.rank}</div>
+      <div class="tinfo"><div class="tclaim">${t.claim}</div><div class="tmeta">${t.cat} · ${t.n} backers</div></div>
+      <div class="tvel">↑ ${t.vel}</div>
+    </div>`).join('');
+  const tc={'Oracle':'t-oracle','Forecaster':'t-fore','Spotter':'t-spot'};
+  const rc=['','r1','r2','r3'];
+  document.getElementById('lb-list').innerHTML=leaderboard.map(u=>`
+    <div class="lbitem">
+      <div class="lbrank ${rc[u.rank]||'rn'}">${u.rank}</div>
+      <div class="lbu"><div class="lbname">@${u.name}</div><div class="lbtier"><span class="tbadge ${tc[u.tier]||'t-nov'}">${u.tier}</span></div></div>
+      <div class="lbstat"><div class="lbacc">${u.acc}%</div><div class="lbcalls">${u.calls} calls</div></div>
+    </div>`).join('');
+}
+
+function renderRewards(){
+  document.getElementById('rw-grid').innerHTML=rewards.map(r=>{
+    const can=PTS>=r.pts;
+    return`<div class="rwcard${r.ft?' ft':''}">
+      <div class="rwimg"><div>${r.emoji}</div><div class="rw-overlay">${r.brand}</div></div>
+      <div class="rwinfo">
+        <div class="rwname">${r.name}</div>
+        <div class="rwtype">${r.type}</div>
+        <div class="rwbot">
+          <div class="rwpts">⚡ ${r.pts}</div>
+          <button class="redbtn${can?'':' locked'}" onclick="redeem(this,${r.pts},'${r.brand}')">${can?'Redeem':'🔒'}</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function renderProfFeed(){
+  document.getElementById('prof-feed').innerHTML=preds.filter(p=>p.user==='jakeshane'||p.user==='alixearle').map(card).join('');
+}
+
+function backIt(id){
+  if(backed.has(id))return;
+  backed.add(id);
+  const btn=document.getElementById('bb-'+id);
+  if(btn){btn.textContent='✓ Backed';btn.classList.add('backed')}
+  const p=preds.find(x=>x.id===id);
+  if(p){p.backers++;p.heat=Math.min(100,p.heat+2)}
+  const hf=document.getElementById('hf-'+id);
+  if(hf&&p)hf.style.width=p.heat+'%';
+  toast('⚡ Backed! +5 pts if this hits.');
+}
+
+function redeem(btn,pts,brand){
+  if(pts>PTS){toast('Not enough points yet 👀');return}
+  btn.textContent='✓';btn.style.background='var(--green)';
+  toast('🎉 '+brand+' reward claimed!');
+}
+
+function go(screen){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById('s-'+screen).classList.add('active');
+  if(screen==='trending')renderTrending();
+  if(screen==='rewards')renderRewards();
+  if(screen==='profile')renderProfFeed();
+  if(screen==='feed')renderFeed(activeFilter);
+}
+
+function selCat(el){document.querySelectorAll('#create-form .cfbtn').forEach(b=>b.classList.remove('on'));el.classList.add('on')}
+function selRes(e){document.querySelectorAll('#create-form .titem').forEach(t=>{t.style.borderColor='';t.style.background='';t.querySelector('span:last-child').style.color=''});const t=e.currentTarget;t.style.borderColor='var(--cyan)';t.style.background='var(--cyan3)';t.querySelector('span:last-child').style.color='var(--cyan)'}
+
+const extras=['🌈','🎭','🧪','💎','🔮','🕶️','🦋','🎯'];let ei=0;
+function addMb(){
+  const s=document.getElementById('add-slot');if(!s)return;
+  s.textContent=extras[ei%extras.length];s.style.border='none';s.style.fontSize='28px';s.style.cursor='default';s.onclick=null;s.id='';ei++;
+  const g=document.getElementById('mb-g');const cnt=g.children.length;
+  document.getElementById('mb-cnt').textContent=cnt+' / 12 images';
+  if(cnt<12){const ns=document.createElement('div');ns.id='add-slot';ns.style.cssText='aspect-ratio:1;border-radius:8px;background:var(--bg3);border:1px dashed rgba(255,255,255,0.13);display:flex;align-items:center;justify-content:center;font-size:20px;color:var(--t2);cursor:pointer';ns.textContent='+';ns.onclick=addMb;g.appendChild(ns)}
+}
+
+function publish(){document.getElementById('create-form').style.display='none';const w=document.getElementById('success-wrap');w.style.display='flex'}
+
+const d=new Date();d.setMonth(d.getMonth()+3);
+const dl=document.getElementById('dl-in');
+if(dl){dl.value=d.toISOString().split('T')[0];dl.min=new Date().toISOString().split('T')[0]}
+
+let tt;
+function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('show'),2400)}
+
+renderFeed('all');
+</script>
